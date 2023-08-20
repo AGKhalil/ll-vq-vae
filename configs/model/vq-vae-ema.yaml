@@ -1,5 +1,9 @@
-name: latq-vae
-embedding_dim: 64
-num_embeddings: 512
-commitment_cost: 0.25
-decay: 0.99
+args:
+  name: vq-vae-ema
+  embedding_dim: 64
+  num_embeddings: 512
+  commitment_cost: 0.25
+  decay: 0.99
+
+trainer:
+  strategy: ddp_find_unused_parameters_true

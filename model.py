@@ -80,19 +80,19 @@ class Model(pl.LightningModule):
         self._encoder = nn.Sequential(*modules)
 
         if name == "latq-vae":
-            self._vq_vae = LatticeQuantizer(
+            self._quantizer = LatticeQuantizer(
                 num_embeddings=num_embeddings,
                 embedding_dim=embedding_dim,
                 commitment_cost=commitment_cost,
             )
         elif name == "vq-vae":
-            self._vq_vae = VectorQuantizer(
+            self._quantizer = VectorQuantizer(
                 num_embeddings=num_embeddings,
                 embedding_dim=embedding_dim,
                 commitment_cost=commitment_cost,
             )
         elif name == "vq-vae-ema":
-            self._vq_vae = VectorQuantizerEMA(
+            self._quantizer = VectorQuantizerEMA(
                 num_embeddings=num_embeddings,
                 embedding_dim=embedding_dim,
                 commitment_cost=commitment_cost,
@@ -150,9 +150,9 @@ class Model(pl.LightningModule):
 
         self._decoder = nn.Sequential(*modules)
 
-    def forward(self, x, centroids=None):
+    def forward(self, x):
         z = self._encoder(x)
-        vq_output = self._vq_vae(z)
+        vq_output = self._quantizer(z)
         x_recon = self._decoder(
             vq_output["quantized"],
         )

@@ -1,4 +1,8 @@
-name: latq-vae
-embedding_dim: 64
-num_embeddings: 512
-commitment_cost: 0.25
+args:
+  name: latq-vae
+  embedding_dim: 64
+  num_embeddings: 512
+  commitment_cost: 0.25
+
+trainer:
+  strategy: ddp

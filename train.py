@@ -62,7 +62,7 @@ def main(cfg: DictConfig) -> None:
     data.setup()
     model = Model(
         **cfg.optimizer,
-        **cfg.model,
+        **cfg.model.args,
         in_channels=cfg.dataset.dataset.in_channels,
     )
     wandb_logger.watch(model)
@@ -72,12 +72,11 @@ def main(cfg: DictConfig) -> None:
         default_root_dir="checkpoints/",
         accelerator="gpu",
         devices=cfg.general.device,
-        strategy="ddp_find_unused_parameters_true",
+        strategy=cfg.model.trainer.strategy,
         callbacks=[
             LearningRateMonitor(),
             GenerateCallback(
                 batch_size=cfg.dataset.trainer.batch_size,
-                name=cfg.model.name,
                 every_n_epochs=2,
             ),
         ],

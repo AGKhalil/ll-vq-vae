@@ -7,17 +7,16 @@ import numpy as np
 
 
 class GenerateCallback(pl.Callback):
-    def __init__(self, batch_size, name, every_n_epochs=1):
+    def __init__(self, batch_size, every_n_epochs=1):
         super().__init__()
         self.every_n_epochs = every_n_epochs
         self.batch_size = batch_size
-        self.name = name
 
     def reconstruct_images(self, trainer, pl_module, train=True):
         with torch.no_grad():
             inputs, _ = next(iter(trainer.datamodule.val_dataloader()))
             pre_vq_output = pl_module._encoder(inputs.to(pl_module.device))
-            vq_output = pl_module._vq_vae(pre_vq_output)
+            vq_output = pl_module._quantizer(pre_vq_output)
             reconst_imgs = pl_module._decoder(vq_output["quantized"])
 
             # Plot and add to logger
@@ -42,7 +41,7 @@ class GenerateCallback(pl.Callback):
     def count_uniques_in_batch(self, pl_module, data):
         inputs, _ = data
         pre_vq_output = pl_module._encoder(inputs.to(pl_module.device))
-        vq_output = pl_module._vq_vae(pre_vq_output)
+        vq_output = pl_module._quantizer(pre_vq_output)
         quantized_flats = vq_output["quantized_flat"].cpu()
         return torch.unique(quantized_flats, dim=0), quantized_flats.shape[0]
 
