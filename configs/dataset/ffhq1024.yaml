@@ -1,0 +1,9 @@
+dataset:
+  name: FFHQ-1024
+  data_dir: data/ffhq/ffhq-1024
+  num_workers: 20
+  in_channels: 3
+
+trainer:
+  max_epochs: 5
+  batch_size: 16

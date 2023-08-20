@@ -1,0 +1,9 @@
+dataset:
+  name: CIFAR10
+  data_dir: data
+  num_workers: 20
+  in_channels: 3
+
+trainer:
+  max_epochs: 5
+  batch_size: 128
