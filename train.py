@@ -71,7 +71,8 @@ def main(cfg: DictConfig) -> None:
         logger=wandb_logger,
         default_root_dir="checkpoints/",
         accelerator="gpu",
-        devices=[cfg.general.device],
+        devices=cfg.general.device,
+        strategy="ddp_find_unused_parameters_true",
         callbacks=[
             LearningRateMonitor(),
             GenerateCallback(
