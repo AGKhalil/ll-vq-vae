@@ -8,10 +8,9 @@ from torchvision.datasets import (
     FashionMNIST,
     CIFAR10,
     CelebA,
-    ImageFolder,
 )
 import torchvision.transforms as transforms
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader, random_split
 
 
 class MNISTDataModule(pl.LightningDataModule):
@@ -305,7 +304,22 @@ def ffhq_collate_fn(batch):
     )
 
 
-class FFHQLargeDataModule(pl.LightningDataModule):
+class FFHQ1024Dataset(Dataset):
+    def __init__(self, data_dir, transform):
+        self.transform = transform
+        self.ds = deeplake.load(data_dir)
+
+    def __len__(self):
+        return len(self.ds)
+
+    def __getitem__(self, idx):
+        landmarks = self.ds.tensors["images_1024/face_landmarks"][idx].numpy()
+        image = self.ds.tensors["images_1024/image"][idx].numpy()
+        image = self.transform(image)
+        return image, landmarks
+
+
+class FFHQ1024DataModule(pl.LightningDataModule):
     def __init__(
         self,
         data_dir,
@@ -316,8 +330,10 @@ class FFHQLargeDataModule(pl.LightningDataModule):
         self.data_dir = data_dir
         self.transform = transforms.Compose(
             [
+                transforms.ToPILImage(),
+                transforms.RandomHorizontalFlip(),
+                transforms.CenterCrop(512),
                 transforms.ToTensor(),
-                transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5]),
             ]
         )
 
@@ -325,48 +341,51 @@ class FFHQLargeDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
 
     def prepare_data(self):
-        # deeplake.deepcopy(
-        #     "hub://activeloop/ffhq",
-        #     "./data/ffhq/ffhq-1024",
-        #     tensors=["images_1024/image", "images_1024/face_landmarks"],
-        # )
-        # deeplake.deepcopy(
-        #     "hub://activeloop/ffhq",
-        #     "./data/ffhq/ffhq-128",
-        #     tensors=["images_128/image"],
-        # )
-        pass
+        deeplake.deepcopy(
+            "hub://activeloop/ffhq",
+            "./data/ffhq/ffhq-1024",
+            tensors=["images_1024/image", "images_1024/face_landmarks"],
+        )
+        deeplake.deepcopy(
+            "hub://activeloop/ffhq",
+            "./data/ffhq/ffhq-128",
+            tensors=["images_128/image"],
+        )
 
     def setup(self, stage=None):
         # Assign train/val datasets for use in dataloaders
         if stage == "fit" or stage is None:
-            self.full_dataset = deeplake.load(self.data_dir)
-            self.train_dataset, self.val_dataset = (
-                self.full_dataset[:60_000],
-                self.full_dataset[60_000:],
+            self.full = FFHQ1024Dataset(self.data_dir, transform=self.transform)
+            self.train_dataset, self.val_dataset = random_split(
+                self.full, [60000, 10000]
+            )
+
+        # Assign test dataset for use in dataloader(s)
+        if stage == "test" or stage is None:
+            self.test_dataset = FFHQ1024Dataset(
+                self.data_dir, transform=self.transform
             )
 
     def train_dataloader(self):
-        return self.train_dataset.pytorch(
+        return DataLoader(
+            self.train_dataset,
             batch_size=self.batch_size,
             shuffle=True,
             num_workers=self.num_workers,
-            transforms=self.transform,
-            collate_fn=ffhq_collate_fn,
+            pin_memory=False,
         )
 
     def val_dataloader(self):
-        return self.val_dataset.pytorch(
+        return DataLoader(
+            self.val_dataset,
             batch_size=self.batch_size,
-            shuffle=False,
             num_workers=self.num_workers,
-            transforms=self.transform,
-            collate_fn=ffhq_collate_fn,
+            pin_memory=False,
         )
 
     def test_dataloader(self):
         return DataLoader(
-            self.celeb_test,
+            self.test_dataset,
             batch_size=self.batch_size,
             shuffle=True,
             num_workers=self.num_workers,

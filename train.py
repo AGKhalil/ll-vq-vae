@@ -9,7 +9,7 @@ from pytorch_lightning.callbacks import LearningRateMonitor
 
 from model import Model
 from data_modules import (
-    FFHQLargeDataModule,
+    FFHQ1024DataModule,
     MNISTDataModule,
     FashionMNISTDataModule,
     CIFAR10DataModule,
@@ -25,7 +25,7 @@ datasets = {
     "FashionMNIST": FashionMNISTDataModule,
     "CIFAR10": CIFAR10DataModule,
     "CELEB-A": CelebADataModule,
-    "FFHQ-1024": FFHQLargeDataModule,
+    "FFHQ-1024": FFHQ1024DataModule,
 }
 
 
@@ -71,8 +71,7 @@ def main(cfg: DictConfig) -> None:
         logger=wandb_logger,
         default_root_dir="checkpoints/",
         accelerator="gpu",
-        devices=cfg.general.device,
-        strategy=cfg.model.trainer.strategy,
+        devices=[cfg.general.device],
         callbacks=[
             LearningRateMonitor(),
             GenerateCallback(
