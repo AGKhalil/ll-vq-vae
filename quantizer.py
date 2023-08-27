@@ -224,12 +224,7 @@ class LatticeQuantizer(nn.Module):
         embedding_loss = F.mse_loss(quantized_latents, latents.detach())
         size_loss = -torch.sum(torch.abs(self.embedding.weight))
 
-        lq_loss = (
-            embedding_loss
-            + self.beta * commitment_loss
-            + size_loss
-            # + interval_loss
-        )
+        lq_loss = embedding_loss + self.beta * commitment_loss + size_loss
 
         # Add the residue back to the latents
         quantized_latents = latents + (quantized_latents - latents).detach()
