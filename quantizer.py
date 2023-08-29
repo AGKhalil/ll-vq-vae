@@ -181,17 +181,23 @@ class LatticeQuantizer(nn.Module):
         embedding_dim,
         num_embeddings,
         commitment_cost,
+        sparsity_cost,
+        initialize_embedding_b,
     ):
         super(LatticeQuantizer, self).__init__()
 
         self.K = num_embeddings
         self.D = embedding_dim
         self.beta = commitment_cost
+        self.gamma = sparsity_cost
 
         self.B = 1 / ((self.K ** (1 / self.D)) - 1)
 
         self.embedding = nn.Embedding(1, self.D)
-        self.embedding.weight.data.uniform_(-self.B, self.B)
+        if initialize_embedding_b:
+            self.embedding.weight.data.uniform_(-self.B, self.B)
+        else:
+            self.embedding.weight.data.uniform_(-1, 1)
 
     def forward(self, latents: torch.Tensor):
         latents = latents.permute(
@@ -224,7 +230,7 @@ class LatticeQuantizer(nn.Module):
         embedding_loss = F.mse_loss(quantized_latents, latents.detach())
         size_loss = -torch.sum(torch.abs(self.embedding.weight))
 
-        lq_loss = embedding_loss + self.beta * commitment_loss + size_loss
+        lq_loss = embedding_loss + self.beta * commitment_loss + self.gamma * size_loss
 
         # Add the residue back to the latents
         quantized_latents = latents + (quantized_latents - latents).detach()

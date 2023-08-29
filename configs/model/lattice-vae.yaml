@@ -1,8 +1,9 @@
 args:
-  name: vq-vae-ema
+  name: lattice-vae
   embedding_dim: 64
   num_embeddings: 512
   commitment_cost: 0.25
-  decay: 0.99
+  sparsity_cost: 1.0
+  initialize_embedding_b: True
   
 count_uniques_bool: True

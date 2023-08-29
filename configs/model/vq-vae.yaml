@@ -3,3 +3,5 @@ args:
   embedding_dim: 64
   num_embeddings: 512
   commitment_cost: 0.25
+  
+count_uniques_bool: True

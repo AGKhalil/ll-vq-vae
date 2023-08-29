@@ -332,7 +332,6 @@ class FFHQ1024DataModule(pl.LightningDataModule):
             [
                 transforms.ToPILImage(),
                 transforms.RandomHorizontalFlip(),
-                transforms.CenterCrop(512),
                 transforms.ToTensor(),
             ]
         )
@@ -341,16 +340,17 @@ class FFHQ1024DataModule(pl.LightningDataModule):
         self.num_workers = num_workers
 
     def prepare_data(self):
-        deeplake.deepcopy(
-            "hub://activeloop/ffhq",
-            "./data/ffhq/ffhq-1024",
-            tensors=["images_1024/image", "images_1024/face_landmarks"],
-        )
-        deeplake.deepcopy(
-            "hub://activeloop/ffhq",
-            "./data/ffhq/ffhq-128",
-            tensors=["images_128/image"],
-        )
+        # deeplake.deepcopy(
+        #     "hub://activeloop/ffhq",
+        #     "./data/ffhq/ffhq-1024",
+        #     tensors=["images_1024/image", "images_1024/face_landmarks"],
+        # )
+        # deeplake.deepcopy(
+        #     "hub://activeloop/ffhq",
+        #     "./data/ffhq/ffhq-128",
+        #     tensors=["images_128/image"],
+        # )
+        pass
 
     def setup(self, stage=None):
         # Assign train/val datasets for use in dataloaders

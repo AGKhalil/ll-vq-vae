@@ -32,6 +32,8 @@ class Model(pl.LightningModule):
         name,
         num_embeddings,
         decay=0,
+        sparsity_cost=0,
+        initialize_embedding_b=True,
     ):
         super(Model, self).__init__()
         self.learning_rate = learning_rate
@@ -79,11 +81,13 @@ class Model(pl.LightningModule):
 
         self._encoder = nn.Sequential(*modules)
 
-        if name == "latq-vae":
+        if name == "lattice-vae":
             self._quantizer = LatticeQuantizer(
                 num_embeddings=num_embeddings,
                 embedding_dim=embedding_dim,
                 commitment_cost=commitment_cost,
+                sparsity_cost=sparsity_cost,
+                initialize_embedding_b=initialize_embedding_b,
             )
         elif name == "vq-vae":
             self._quantizer = VectorQuantizer(

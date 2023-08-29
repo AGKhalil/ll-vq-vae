@@ -5,9 +5,9 @@ defaults:
 
 general:
   entity: squirl
-  project: latq-vae
+  project: lattice-vae
   seed: 392
-  device: 2
+  device: 0
 
 optimizer:
   learning_rate: 1e-3

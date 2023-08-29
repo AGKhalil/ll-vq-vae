@@ -6,4 +6,4 @@ dataset:
 
 trainer:
   max_epochs: 5
-  batch_size: 64
+  batch_size: 32
