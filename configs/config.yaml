@@ -1,11 +1,11 @@
 defaults:
-- model: vq-vae-ema
-- dataset: ffhq1024
+- model: ll-vq-vae
+- dataset: fashion-mnist
 - _self_
 
 general:
-  entity: squirl
-  project: lattice-vae
+  entity: agkhalil
+  project: ll-vq-vae
   seed: 392
   device: 0
 

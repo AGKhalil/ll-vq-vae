@@ -31,6 +31,7 @@ class Model(pl.LightningModule):
         commitment_cost,
         name,
         num_embeddings,
+        hidden_dims,
         decay=0,
         sparsity_cost=0,
         initialize_embedding_b=True,
@@ -41,7 +42,7 @@ class Model(pl.LightningModule):
         out_channels = in_channels
 
         modules = []
-        hidden_dims = [16, 32]
+        hidden_dims = hidden_dims
 
         # Build Encoder
         for h_dim in hidden_dims:
@@ -81,7 +82,7 @@ class Model(pl.LightningModule):
 
         self._encoder = nn.Sequential(*modules)
 
-        if name == "lattice-vae":
+        if name == "ll-vq-vae":
             self._quantizer = LatticeQuantizer(
                 num_embeddings=num_embeddings,
                 embedding_dim=embedding_dim,

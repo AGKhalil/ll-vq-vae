@@ -1,9 +1,0 @@
-dataset:
-  name: MNIST
-  data_dir: data
-  num_workers: 20
-  in_channels: 1
-
-trainer:
-  max_epochs: 10
-  batch_size: 64

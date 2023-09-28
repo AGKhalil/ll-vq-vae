@@ -112,4 +112,5 @@ data/
 latq-vae/
 outputs/
 .hydra/
-run.sh
+lattice-vae*
+ll-vq-vae*

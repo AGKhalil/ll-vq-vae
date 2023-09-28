@@ -59,10 +59,12 @@ def main(cfg: DictConfig) -> None:
         batch_size=cfg.dataset.trainer.batch_size,
         num_workers=cfg.dataset.dataset.num_workers,
     )
+    data.prepare_data()
     data.setup()
     model = Model(
         **cfg.optimizer,
         **cfg.model.args,
+        **cfg.dataset.model,
         in_channels=cfg.dataset.dataset.in_channels,
     )
     wandb_logger.watch(model)

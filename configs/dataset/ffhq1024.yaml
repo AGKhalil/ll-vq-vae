@@ -4,6 +4,9 @@ dataset:
   num_workers: 5
   in_channels: 3
 
+model:
+  hidden_dims: [16, 32]
+
 trainer:
   max_epochs: 5
   batch_size: 32

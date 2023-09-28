@@ -1,10 +1,6 @@
-import math
 import torch
 import torch.nn as nn
-import numpy as np
 import torch.nn.functional as F
-
-torch.autograd.set_detect_anomaly(True)
 
 
 class VectorQuantizer(nn.Module):
@@ -203,34 +199,29 @@ class LatticeQuantizer(nn.Module):
         latents = latents.permute(
             0, 2, 3, 1
         ).contiguous()  # [B x D x H x W] -> [B x H x W x D]
-        latents_shape = latents.shape
         flat_latents = latents.view(-1, self.D)  # [BHW x D]
 
-        # Create lattice generator matrix
-        lattice = self.embedding.weight * torch.eye(self.D).type_as(
-            self.embedding.weight
-        )
-        inv_lattice = (1 / self.embedding.weight) * torch.eye(self.D).type_as(
-            self.embedding.weight
-        )
-
         # Babai estimate
-        babai_estimate_unrounded = torch.matmul(
-            inv_lattice,
-            flat_latents.T,
+        babai_estimate = torch.round(
+            torch.mul(flat_latents, 1 / self.embedding.weight)
         )
-        babai_estimate = torch.round(babai_estimate_unrounded)
 
         # Quantize the latents
-        quantized_latents_flat = torch.matmul(lattice, babai_estimate).T
-        quantized_latents = quantized_latents_flat.view(latents_shape)
+        quantized_latents_flat = torch.mul(
+            self.embedding.weight, babai_estimate
+        )
+        quantized_latents = quantized_latents_flat.view(latents.shape)
 
         # Compute the LQ Losses
         commitment_loss = F.mse_loss(quantized_latents.detach(), latents)
         embedding_loss = F.mse_loss(quantized_latents, latents.detach())
         size_loss = -torch.sum(torch.abs(self.embedding.weight))
 
-        lq_loss = embedding_loss + self.beta * commitment_loss + self.gamma * size_loss
+        lq_loss = (
+            embedding_loss
+            + self.beta * commitment_loss
+            + self.gamma * size_loss
+        )
 
         # Add the residue back to the latents
         quantized_latents = latents + (quantized_latents - latents).detach()
