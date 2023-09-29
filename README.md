@@ -1,4 +1,4 @@
-# latq-vae
+# LL-VQ-VAE
 
 To replicate paper results simply run:
 ```
