@@ -1,3 +1,4 @@
+# model architecture code is adapted from https://github.com/AntixK/PyTorch-VAE/blob/master/models/vq_vae.py
 from torch import Tensor
 import torch.optim as optim
 import torch.nn as nn
