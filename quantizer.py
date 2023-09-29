@@ -1,3 +1,4 @@
+# the vq-vae code is adapted from https://github.com/zalandoresearch/pytorch-vq-vae
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
