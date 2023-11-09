@@ -79,6 +79,20 @@ class FashionMNISTDataModule(pl.LightningDataModule):
         )
 
 
+class CelebADataset(Dataset):
+    def __init__(self, data_dir, transform):
+        self.transform = transform
+        self.ds = deeplake.load(data_dir)
+
+    def __len__(self):
+        return len(self.ds)
+
+    def __getitem__(self, idx):
+        image = self.ds.tensors["images"][idx].numpy()
+        image = self.transform(image)
+        return image
+
+
 class CelebADataModule(pl.LightningDataModule):
     def __init__(
         self,
@@ -100,25 +114,40 @@ class CelebADataModule(pl.LightningDataModule):
         self.num_workers = num_workers
 
     def prepare_data(self):
-        if not os.path.exists(f"./{self.data_dir}"):
-            CelebA(self.data_dir, split="train", transform=self.transform)
-            CelebA(self.data_dir, split="valid", transform=self.transform)
-            CelebA(self.data_dir, split="test", transform=self.transform)
+        if not os.path.exists(os.path.join(f"./{self.data_dir}", "celeba")):
+            deeplake.deepcopy(
+                "hub://activeloop/celeb-a-train",
+                os.path.join(f"./{self.data_dir}", "celeba", "train"),
+                tensors=["images"],
+            )
+            deeplake.deepcopy(
+                "hub://activeloop/celeb-a-val",
+                os.path.join(f"./{self.data_dir}", "celeba", "val"),
+                tensors=["images"],
+            )
+            deeplake.deepcopy(
+                "hub://activeloop/celeb-a-test",
+                os.path.join(f"./{self.data_dir}", "celeba", "test"),
+                tensors=["images"],
+            )
 
     def setup(self, stage=None):
         # Assign train/val datasets for use in dataloaders
         if stage == "fit" or stage is None:
-            self.train_dataset = CelebA(
-                self.data_dir, split="train", transform=self.transform
+            self.train_dataset = CelebADataset(
+                os.path.join(f"./{self.data_dir}", "celeba", "train"),
+                transform=self.transform,
             )
-            self.val_dataset = CelebA(
-                self.data_dir, split="valid", transform=self.transform
+            self.val_dataset = CelebADataset(
+                os.path.join(f"./{self.data_dir}", "celeba", "val"),
+                transform=self.transform,
             )
 
         # Assign test dataset for use in dataloader(s)
         if stage == "test" or stage is None:
-            self.celeb_test = CelebA(
-                self.data_dir, split="test", transform=self.transform
+            self.test_dataset = CelebADataset(
+                os.path.join(f"./{self.data_dir}", "celeba", "test"),
+                transform=self.transform,
             )
 
     def train_dataloader(self):
