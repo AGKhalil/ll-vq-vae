@@ -90,7 +90,7 @@ class CelebADataset(Dataset):
     def __getitem__(self, idx):
         image = self.ds.tensors["images"][idx].numpy()
         image = self.transform(image)
-        return image
+        return image, idx
 
 
 class CelebADataModule(pl.LightningDataModule):
@@ -104,6 +104,7 @@ class CelebADataModule(pl.LightningDataModule):
         self.data_dir = data_dir
         self.transform = transforms.Compose(
             [
+                transforms.ToPILImage(),
                 transforms.RandomHorizontalFlip(),
                 transforms.CenterCrop(148),
                 transforms.ToTensor(),
@@ -186,10 +187,9 @@ class FFHQ1024Dataset(Dataset):
         return len(self.ds)
 
     def __getitem__(self, idx):
-        landmarks = self.ds.tensors["images_1024/face_landmarks"][idx].numpy()
         image = self.ds.tensors["images_1024/image"][idx].numpy()
         image = self.transform(image)
-        return image, landmarks
+        return image, idx
 
 
 class FFHQ1024DataModule(pl.LightningDataModule):
