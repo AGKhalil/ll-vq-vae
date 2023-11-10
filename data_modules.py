@@ -79,6 +79,33 @@ class FashionMNISTDataModule(pl.LightningDataModule):
         )
 
 
+class CelebADataset(Dataset):
+    def __init__(self, data_dir, transform):
+        self.transform = transform
+        self.ds = deeplake.load(data_dir)
+
+    def __len__(self):
+        return len(self.ds)
+
+    def __getitem__(self, idx):
+        image = self.ds.tensors["images"][idx].numpy()
+        box = self.ds.tensors["boxes"][idx].numpy()[0]
+
+        if box[2] == box[3] == 0:
+            self.ds.pop(idx)
+            image = self.ds.tensors["images"][idx].numpy()
+            box = self.ds.tensors["boxes"][idx].numpy()[0]
+
+        image = self.transform(
+            image[
+                int(box[1]) : int(box[1] + box[3]),
+                int(box[0]) : int(box[0] + box[2]),
+                :,
+            ]
+        )
+        return image, idx
+
+
 class CelebADataModule(pl.LightningDataModule):
     def __init__(
         self,
@@ -90,8 +117,8 @@ class CelebADataModule(pl.LightningDataModule):
         self.data_dir = data_dir
         self.transform = transforms.Compose(
             [
-                transforms.RandomHorizontalFlip(),
-                transforms.CenterCrop(148),
+                transforms.ToPILImage(),
+                transforms.CenterCrop(178),
                 transforms.ToTensor(),
             ]
         )
@@ -100,25 +127,49 @@ class CelebADataModule(pl.LightningDataModule):
         self.num_workers = num_workers
 
     def prepare_data(self):
-        if not os.path.exists(f"./{self.data_dir}"):
-            CelebA(self.data_dir, split="train", transform=self.transform)
-            CelebA(self.data_dir, split="valid", transform=self.transform)
-            CelebA(self.data_dir, split="test", transform=self.transform)
+        if not os.path.exists(os.path.join(f"./{self.data_dir}", "celeba")):
+            deeplake.deepcopy(
+                "hub://activeloop/celeb-a-train",
+                os.path.join(f"./{self.data_dir}", "celeba", "train"),
+                tensors=[
+                    "images",
+                    "boxes",
+                ],
+            )
+            deeplake.deepcopy(
+                "hub://activeloop/celeb-a-val",
+                os.path.join(f"./{self.data_dir}", "celeba", "val"),
+                tensors=[
+                    "images",
+                    "boxes",
+                ],
+            )
+            deeplake.deepcopy(
+                "hub://activeloop/celeb-a-test",
+                os.path.join(f"./{self.data_dir}", "celeba", "test"),
+                tensors=[
+                    "images",
+                    "boxes",
+                ],
+            )
 
     def setup(self, stage=None):
         # Assign train/val datasets for use in dataloaders
         if stage == "fit" or stage is None:
-            self.train_dataset = CelebA(
-                self.data_dir, split="train", transform=self.transform
+            self.train_dataset = CelebADataset(
+                os.path.join(f"./{self.data_dir}", "celeba", "train"),
+                transform=self.transform,
             )
-            self.val_dataset = CelebA(
-                self.data_dir, split="valid", transform=self.transform
+            self.val_dataset = CelebADataset(
+                os.path.join(f"./{self.data_dir}", "celeba", "val"),
+                transform=self.transform,
             )
 
         # Assign test dataset for use in dataloader(s)
         if stage == "test" or stage is None:
-            self.celeb_test = CelebA(
-                self.data_dir, split="test", transform=self.transform
+            self.test_dataset = CelebADataset(
+                os.path.join(f"./{self.data_dir}", "celeba", "test"),
+                transform=self.transform,
             )
 
     def train_dataloader(self):
@@ -157,10 +208,9 @@ class FFHQ1024Dataset(Dataset):
         return len(self.ds)
 
     def __getitem__(self, idx):
-        landmarks = self.ds.tensors["images_1024/face_landmarks"][idx].numpy()
         image = self.ds.tensors["images_1024/image"][idx].numpy()
         image = self.transform(image)
-        return image, landmarks
+        return image, idx
 
 
 class FFHQ1024DataModule(pl.LightningDataModule):

@@ -43,7 +43,7 @@ class GenerateCallback(pl.Callback):
         inputs, _ = data
         pre_vq_output = pl_module._encoder(inputs.to(pl_module.device))
         vq_output = pl_module._quantizer(pre_vq_output)
-        quantized_flats = vq_output["quantized_flat"].cpu()
+        quantized_flats = vq_output["quantized_flat"]
         return torch.unique(quantized_flats, dim=0), quantized_flats.shape[0]
 
     def count_uniques(self, trainer, pl_module):

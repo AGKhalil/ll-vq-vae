@@ -10,9 +10,7 @@ from pytorch_lightning.callbacks import LearningRateMonitor
 from model import Model
 from data_modules import (
     FFHQ1024DataModule,
-    MNISTDataModule,
     FashionMNISTDataModule,
-    CIFAR10DataModule,
     CelebADataModule,
 )
 from callbacks import GenerateCallback
@@ -21,9 +19,7 @@ import pytorch_lightning as pl
 
 
 datasets = {
-    "MNIST": MNISTDataModule,
     "FashionMNIST": FashionMNISTDataModule,
-    "CIFAR10": CIFAR10DataModule,
     "CELEB-A": CelebADataModule,
     "FFHQ-1024": FFHQ1024DataModule,
 }
