@@ -1,7 +1,7 @@
 dataset:
   name: CELEB-A
   data_dir: data
-  num_workers: 20
+  num_workers: 5
   in_channels: 3
 
 model:

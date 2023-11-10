@@ -89,7 +89,20 @@ class CelebADataset(Dataset):
 
     def __getitem__(self, idx):
         image = self.ds.tensors["images"][idx].numpy()
-        image = self.transform(image)
+        box = self.ds.tensors["boxes"][idx].numpy()[0]
+
+        if box[2] == box[3] == 0:
+            self.ds.pop(idx)
+            image = self.ds.tensors["images"][idx].numpy()
+            box = self.ds.tensors["boxes"][idx].numpy()[0]
+
+        image = self.transform(
+            image[
+                int(box[1]) : int(box[1] + box[3]),
+                int(box[0]) : int(box[0] + box[2]),
+                :,
+            ]
+        )
         return image, idx
 
 
@@ -105,8 +118,7 @@ class CelebADataModule(pl.LightningDataModule):
         self.transform = transforms.Compose(
             [
                 transforms.ToPILImage(),
-                transforms.RandomHorizontalFlip(),
-                transforms.CenterCrop(148),
+                transforms.CenterCrop(178),
                 transforms.ToTensor(),
             ]
         )
@@ -119,17 +131,26 @@ class CelebADataModule(pl.LightningDataModule):
             deeplake.deepcopy(
                 "hub://activeloop/celeb-a-train",
                 os.path.join(f"./{self.data_dir}", "celeba", "train"),
-                tensors=["images"],
+                tensors=[
+                    "images",
+                    "boxes",
+                ],
             )
             deeplake.deepcopy(
                 "hub://activeloop/celeb-a-val",
                 os.path.join(f"./{self.data_dir}", "celeba", "val"),
-                tensors=["images"],
+                tensors=[
+                    "images",
+                    "boxes",
+                ],
             )
             deeplake.deepcopy(
                 "hub://activeloop/celeb-a-test",
                 os.path.join(f"./{self.data_dir}", "celeba", "test"),
-                tensors=["images"],
+                tensors=[
+                    "images",
+                    "boxes",
+                ],
             )
 
     def setup(self, stage=None):
