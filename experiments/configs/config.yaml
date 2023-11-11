@@ -1,10 +1,10 @@
 defaults:
-- quantizer: lattice
-- dataset: ffhq1024
+- quantizer: sparse_lattice_init_b
+- dataset: celeba
 - _self_
 
 general:
-  entity: enetity
+  entity: entity
   project: ll-vq-vae
   seed: 392
   device: 0

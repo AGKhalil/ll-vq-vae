@@ -1,9 +1,15 @@
 # Code from https://pytorch-lightning.readthedocs.io/en/latest/notebooks/lightning_examples/datamodules.html
 import os
+import torch
 import deeplake
 import pytorch_lightning as pl
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
+
+
+def custom_collate_fn(batch):
+    batch = list(filter(lambda x: x is not None, batch))
+    return torch.utils.data.default_collate(batch)
 
 
 class CelebADataset(Dataset):
@@ -19,9 +25,7 @@ class CelebADataset(Dataset):
         box = self.ds.tensors["boxes"][idx].numpy()[0]
 
         if box[2] == box[3] == 0:
-            self.ds.pop(idx)
-            image = self.ds.tensors["images"][idx].numpy()
-            box = self.ds.tensors["boxes"][idx].numpy()[0]
+            return None
 
         image = self.transform(
             image[
@@ -45,6 +49,7 @@ class CelebADataModule(pl.LightningDataModule):
         self.transform = transforms.Compose(
             [
                 transforms.ToPILImage(),
+                transforms.Resize(178),
                 transforms.CenterCrop(178),
                 transforms.ToTensor(),
             ]
@@ -106,6 +111,7 @@ class CelebADataModule(pl.LightningDataModule):
             shuffle=True,
             num_workers=self.num_workers,
             pin_memory=False,
+            collate_fn=custom_collate_fn,
         )
 
     def val_dataloader(self):
@@ -114,13 +120,15 @@ class CelebADataModule(pl.LightningDataModule):
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             pin_memory=False,
+            collate_fn=custom_collate_fn,
         )
 
     def test_dataloader(self):
         return DataLoader(
-            self.celeb_test,
+            self.test_dataset,
             batch_size=self.batch_size,
             shuffle=True,
             num_workers=self.num_workers,
             pin_memory=False,
+            collate_fn=custom_collate_fn,
         )

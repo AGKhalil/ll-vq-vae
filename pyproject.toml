@@ -33,6 +33,7 @@ dependencies = [
     "deeplake==3.8.4",
     "python-dotenv==1.0.0",
     "hydra-core==1.3.2",
+    "matplotlib==3.8.1",
     "protobuf==3.20.0",
     "python-dotenv==1.0.0",
     "pytorch-lightning==2.1.1",
