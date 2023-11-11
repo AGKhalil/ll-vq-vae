@@ -14,9 +14,9 @@ class VectorQuantizer(Quantizer):
         commitment_cost,
     ):
         super(VectorQuantizer, self).__init__(
-            embedding_dim,
-            num_embeddings,
-            commitment_cost,
+            embedding_dim=embedding_dim,
+            num_embeddings=num_embeddings,
+            commitment_cost=commitment_cost,
         )
         self.embedding = nn.Embedding(self.num_embeddings, self.embedding_dim)
         self.embedding.weight.data.uniform_(

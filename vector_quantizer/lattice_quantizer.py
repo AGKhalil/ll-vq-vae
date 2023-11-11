@@ -16,9 +16,9 @@ class LatticeQuantizer(Quantizer):
         initialize_embedding_b: bool = True,
     ):
         super(LatticeQuantizer, self).__init__(
-            embedding_dim,
-            num_embeddings,
-            commitment_cost,
+            embedding_dim=embedding_dim,
+            num_embeddings=num_embeddings,
+            commitment_cost=commitment_cost,
         )
         self.sparsity_cost = sparsity_cost
 
