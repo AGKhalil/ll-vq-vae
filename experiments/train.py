@@ -59,10 +59,9 @@ def main(cfg: DictConfig) -> None:
         )
     wandb_logger.experiment.log_code(".")
 
-    data = datasets[cfg.dataset.dataset.name](
-        data_dir=cfg.dataset.dataset.data_dir,
+    data = datasets[cfg.dataset.name](
+        **cfg.dataset.dataset,
         batch_size=cfg.dataset.trainer.batch_size,
-        num_workers=cfg.dataset.dataset.num_workers,
     )
     data.prepare_data()
     data.setup()
@@ -71,7 +70,6 @@ def main(cfg: DictConfig) -> None:
         **cfg.optimizer,
         **cfg.dataset.model,
         embedding_dim=cfg.quantizer.args.embedding_dim,
-        in_channels=cfg.dataset.dataset.in_channels,
         quantizer=quantizer,
     )
     wandb_logger.watch(model)
