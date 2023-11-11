@@ -106,7 +106,7 @@ venv.bak/
 data/
 *wandb
 *artifacts/
-*checkpoints*
+checkpoints*
 *lightning_logs/
 *.vscode
 latq-vae/

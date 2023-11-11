@@ -3,12 +3,6 @@ defaults:
 - dataset: celeba
 - _self_
 
-general:
-  entity: entity
-  project: ll-vq-vae
-  seed: 392
-  device: 0
-
 optimizer:
   learning_rate: 1e-3
   scheduler_gamma: 0.0
