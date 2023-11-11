@@ -1,10 +1,12 @@
 # model architecture code is adapted from https://github.com/AntixK/PyTorch-VAE/blob/master/models/vq_vae.py
+from typing import List
 from torch import Tensor
 import torch.optim as optim
 import torch.nn as nn
 import torch.nn.functional as F
-from quantizer import VectorQuantizer, VectorQuantizerEMA, LatticeQuantizer
 import pytorch_lightning as pl
+
+from vector_quantizer import Quantizer
 
 
 class ResidualLayer(nn.Module):
@@ -25,21 +27,20 @@ class ResidualLayer(nn.Module):
 class Model(pl.LightningModule):
     def __init__(
         self,
-        learning_rate,
-        scheduler_gamma,
-        in_channels,
-        embedding_dim,
-        commitment_cost,
-        name,
-        num_embeddings,
-        hidden_dims,
-        decay=0,
-        sparsity_cost=0,
-        initialize_embedding_b=True,
+        embedding_dim: int = 64,
+        hidden_dims: List[int] = None,
+        in_channels: int = None,
+        learning_rate: float = 1e-3,
+        quantizer: Quantizer = None,
+        scheduler_gamma: float = 0.0,
+        weight_decay=0.0,
     ):
         super(Model, self).__init__()
         self.learning_rate = learning_rate
         self.scheduler_gamma = scheduler_gamma
+        self.weight_decay = weight_decay
+        self._quantizer = quantizer
+
         out_channels = in_channels
 
         modules = []
@@ -82,28 +83,6 @@ class Model(pl.LightningModule):
         )
 
         self._encoder = nn.Sequential(*modules)
-
-        if name == "ll-vq-vae":
-            self._quantizer = LatticeQuantizer(
-                num_embeddings=num_embeddings,
-                embedding_dim=embedding_dim,
-                commitment_cost=commitment_cost,
-                sparsity_cost=sparsity_cost,
-                initialize_embedding_b=initialize_embedding_b,
-            )
-        elif name == "vq-vae":
-            self._quantizer = VectorQuantizer(
-                num_embeddings=num_embeddings,
-                embedding_dim=embedding_dim,
-                commitment_cost=commitment_cost,
-            )
-        elif name == "vq-vae-ema":
-            self._quantizer = VectorQuantizerEMA(
-                num_embeddings=num_embeddings,
-                embedding_dim=embedding_dim,
-                commitment_cost=commitment_cost,
-                decay=decay,
-            )
 
         # Build Decoder
         modules = []
@@ -172,7 +151,7 @@ class Model(pl.LightningModule):
         optimizer = optim.Adam(
             self.parameters(),
             lr=self.learning_rate,
-            weight_decay=0.0,
+            weight_decay=self.weight_decay,
         )
         scheduler = optim.lr_scheduler.ExponentialLR(
             optimizer, gamma=self.scheduler_gamma

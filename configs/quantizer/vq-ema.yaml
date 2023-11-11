@@ -1,5 +1,6 @@
+name: vq-ema
+
 args:
-  name: vq-vae-ema
   embedding_dim: 64
   num_embeddings: 512
   commitment_cost: 0.25

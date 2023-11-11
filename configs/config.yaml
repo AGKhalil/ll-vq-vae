@@ -1,6 +1,6 @@
 defaults:
-- model: ll-vq-vae
-- dataset: fashion-mnist
+- quantizer: lattice
+- dataset: ffhq1024
 - _self_
 
 general:
@@ -12,3 +12,4 @@ general:
 optimizer:
   learning_rate: 1e-3
   scheduler_gamma: 0.0
+  weight_decay: 0.0
