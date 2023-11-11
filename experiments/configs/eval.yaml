@@ -1,0 +1,9 @@
+defaults:
+- quantizer: sparse_lattice_init_b
+- dataset: celeba
+- _self_
+
+optimizer:
+  learning_rate: 1e-3
+  scheduler_gamma: 0.0
+  weight_decay: 0.0
