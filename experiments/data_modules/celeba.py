@@ -24,7 +24,7 @@ class CelebADataset(Dataset):
         image = self.ds.tensors["images"][idx].numpy()
         box = self.ds.tensors["boxes"][idx].numpy()[0]
 
-        if box[2] == box[3] == 0:
+        if box[2] < 178 or box[3] < 178:
             return None
 
         image = self.transform(
@@ -49,7 +49,6 @@ class CelebADataModule(pl.LightningDataModule):
         self.transform = transforms.Compose(
             [
                 transforms.ToPILImage(),
-                transforms.Resize(178),
                 transforms.CenterCrop(178),
                 transforms.ToTensor(),
             ]
