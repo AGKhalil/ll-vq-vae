@@ -1,11 +1,12 @@
+name: FashionMNIST
+
 dataset:
-  name: FashionMNIST
   data_dir: data
-  num_workers: 20
-  in_channels: 1
+  num_workers: 10
 
 model:
   hidden_dims: [64]
+  in_channels: 1
 
 trainer:
   max_epochs: 5

@@ -1,11 +1,12 @@
+name: FFHQ-1024
+
 dataset:
-  name: FFHQ-1024
   data_dir: data/ffhq/ffhq-1024
   num_workers: 5
-  in_channels: 3
 
 model:
   hidden_dims: [16, 32]
+  in_channels: 3
 
 trainer:
   max_epochs: 5

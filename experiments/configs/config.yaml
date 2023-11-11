@@ -4,7 +4,7 @@ defaults:
 - _self_
 
 general:
-  entity: entity
+  entity: enetity
   project: ll-vq-vae
   seed: 392
   device: 0
