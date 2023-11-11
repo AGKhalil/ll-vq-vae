@@ -13,8 +13,12 @@ from data_modules import (
     FashionMNISTDataModule,
     CelebADataModule,
 )
+from vector_quantizer import (
+    VectorQuantizer,
+    VectorQuantizerEMA,
+    LatticeQuantizer,
+)
 from callbacks import GenerateCallback
-
 import pytorch_lightning as pl
 
 
@@ -22,6 +26,11 @@ datasets = {
     "FashionMNIST": FashionMNISTDataModule,
     "CELEB-A": CelebADataModule,
     "FFHQ-1024": FFHQ1024DataModule,
+}
+quantizers = {
+    "vq": VectorQuantizer,
+    "vq-ema": VectorQuantizerEMA,
+    "lattice": LatticeQuantizer,
 }
 
 
@@ -57,11 +66,13 @@ def main(cfg: DictConfig) -> None:
     )
     data.prepare_data()
     data.setup()
+    quantizer = quantizers[cfg.quantizer.name](**cfg.quantizer.args)
     model = Model(
         **cfg.optimizer,
-        **cfg.model.args,
         **cfg.dataset.model,
+        embedding_dim=cfg.quantizer.args.embedding_dim,
         in_channels=cfg.dataset.dataset.in_channels,
+        quantizer=quantizer,
     )
     wandb_logger.watch(model)
     trainer = pl.Trainer(
@@ -73,7 +84,7 @@ def main(cfg: DictConfig) -> None:
         callbacks=[
             LearningRateMonitor(),
             GenerateCallback(
-                count_uniques_bool=cfg.model.count_uniques_bool,
+                count_uniques_bool=cfg.quantizer.count_uniques_bool,
                 batch_size=cfg.dataset.trainer.batch_size,
                 every_n_epochs=2,
             ),

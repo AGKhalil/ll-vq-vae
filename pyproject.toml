@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+
+[options]
+packages = "find:"
+zip_safe = "True"
+
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[project]
+name = "vector_quantizer"
+authors = [
+    {name="Ahmed Khalil", email="elghazalykhalil@gmail.com"},
+]
+version = "1.0.0"
+
+requires-python = ">=3.7"
+
+description = "Implementation of LL-VQ-VAE and relevant experiments."
+long_description = "file: README.md"
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "debugpy==1.6.0",
+    "deeplake==3.8.4",
+    "python-dotenv==1.0.0",
+    "hydra-core==1.3.2",
+    "protobuf==3.20.0",
+    "python-dotenv==1.0.0",
+    "pytorch-lightning==2.1.1",
+    "torch==2.0.1",
+    "torchvision==0.15.2",
+    "tqdm==4.63.1",
+    "wandb==0.12.14",
+]
+
+[tool.black]
+line-length = 79 
+target-version = ['py37']
+force-exclude = "__init__.py"
