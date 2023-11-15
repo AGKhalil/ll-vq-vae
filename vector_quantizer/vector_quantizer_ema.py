@@ -23,7 +23,7 @@ class VectorQuantizerEMA(Quantizer):
         self.embedding = nn.Embedding(self.num_embeddings, self.embedding_dim)
         self.embedding.weight.data.normal_()
 
-        self.register_buffer("_ema_cluster_size", torch.zeros(num_embeddings))
+        self.register_buffer("ema_cluster_size", torch.zeros(num_embeddings))
         self.ema_w = nn.Parameter(
             torch.Tensor(num_embeddings, self.embedding_dim)
         )

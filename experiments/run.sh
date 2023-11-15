@@ -1,12 +1,7 @@
-for seed in 32 432 2
-    dataset in 'ffhq1024' 'celeba' 'fashion-mnist'
+for dataset in 'fashion-mnist' 'celeba' 'ffhq1024'
+do
+    for quantizer in 'dense_lattice' 'sparse_lattice' 'vq' 'vq-ema'
     do
-        python train.py quantizer='dense_lattice' dataset=$dataset general.seed=$seed  general.device=0
-        python train.py quantizer='sparse_lattice_init_b' dataset=$dataset general.seed=$seed  general.device=0
-        python train.py quantizer='sparse_lattice_no_init_b' dataset=$dataset general.seed=$seed  general.device=0
-
-        for quantizer in 'vq' 'vq-ema'
-        do
-            python train.py quantizer=$quantizer dataset=$dataset general.seed=$seed  general.device=0
-        done
+        python evaluate_checkpoint.py dataset=$dataset quantizer=$quantizer
     done
+done

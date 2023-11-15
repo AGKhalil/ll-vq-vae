@@ -56,7 +56,10 @@ def count_uniques(
         n_uniques = torch.unique(all_quantized_flats_stack, dim=0).shape[0]
         total_n = sum(all_ns)
 
-    return n_uniques, total_n
+    return {
+        "n_uniques": n_uniques,
+        "total_n": total_n,
+    }
 
 
 def reconstruct_images(

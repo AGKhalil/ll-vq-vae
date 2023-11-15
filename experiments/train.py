@@ -82,7 +82,6 @@ def main(cfg: DictConfig) -> None:
         callbacks=[
             LearningRateMonitor(),
             GenerateCallback(
-                count_uniques_bool=cfg.quantizer.count_uniques_bool,
                 batch_size=cfg.dataset.trainer.batch_size,
                 every_n_epochs=2,
             ),

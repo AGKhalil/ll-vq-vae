@@ -5,5 +5,3 @@ args:
   num_embeddings: 512
   commitment_cost: 0.25
   decay: 0.99
-  
-count_uniques_bool: True

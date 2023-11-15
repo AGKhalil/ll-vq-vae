@@ -1,5 +1,5 @@
 defaults:
-- quantizer: sparse_lattice_init_b
+- quantizer: sparse_lattice
 - dataset: celeba
 - _self_
 

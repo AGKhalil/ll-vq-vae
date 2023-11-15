@@ -6,5 +6,3 @@ args:
   commitment_cost: 0.25
   sparsity_cost: -1.0
   initialize_embedding_b: False
-  
-count_uniques_bool: False

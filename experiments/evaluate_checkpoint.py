@@ -1,3 +1,4 @@
+import json
 import os
 import matplotlib.pyplot as plt
 import hydra
@@ -16,6 +17,7 @@ from vector_quantizer import (
     VectorQuantizerEMA,
     LatticeQuantizer,
 )
+import pytorch_lightning as pl
 
 datasets = {
     "FashionMNIST": FashionMNISTDataModule,
@@ -35,6 +37,7 @@ quantizers = {
     config_name="eval",
 )
 def main(cfg: DictConfig) -> None:
+    pl.seed_everything(42)
     hydra_cfg = HydraConfig.get()
     quantizer_choice = OmegaConf.to_container(hydra_cfg.runtime.choices)[
         "quantizer"
@@ -43,7 +46,7 @@ def main(cfg: DictConfig) -> None:
         "dataset"
     ]
     checkpoint_path = os.path.join(
-        "pretrained_checkpoints",
+        "pretrained",
         dataset_choice,
         f"{quantizer_choice}.ckpt",
     )
@@ -69,20 +72,37 @@ def main(cfg: DictConfig) -> None:
 
     grid = reconstruct_images(dataloader=data.test_dataloader, model=model)
     plt.imshow(grid.cpu().permute(1, 2, 0))
-    plt.savefig("reconstructed_images.png")
+    plt.savefig(
+        os.path.join(
+            "reconstructions",
+            dataset_choice,
+            f"{quantizer_choice}.png",
+        ),
+        dpi=600,
+    )
 
-    n_uniques, total_n = count_uniques(
+    if "dense" in quantizer_choice:
+        print(
+            "The dense lattice assigns a quantization point per embedding"
+            " vector. So the codebook is too large to count."
+        )
+        return
+
+    codebook_usage = count_uniques(
         model=model,
         dataloaders=[
             data.train_dataloader,
             data.val_dataloader,
-            data.test_dataloader,
         ],
     )
-    print(
-        f"Number of unique codewords: {n_uniques}",
-        f"\nTotal number of embeddings that were quantized: {total_n}",
+
+    json_path = os.path.join(
+        "reconstructions",
+        dataset_choice,
+        f"{quantizer_choice}.json",
     )
+    with open(json_path, "w") as json_file:
+        json.dump(codebook_usage, json_file)
 
 
 if __name__ == "__main__":

@@ -1,13 +1,12 @@
 import wandb
 import pytorch_lightning as pl
 
-from utils import count_uniques, count_uniques_in_batch, reconstruct_images
+from utils import count_uniques_in_batch, reconstruct_images
 
 
 class GenerateCallback(pl.Callback):
-    def __init__(self, count_uniques_bool, batch_size, every_n_epochs=1):
+    def __init__(self, batch_size, every_n_epochs=1):
         super().__init__()
-        self.count_uniques_bool = count_uniques_bool
         self.every_n_epochs = every_n_epochs
         self.batch_size = batch_size
 
@@ -24,18 +23,6 @@ class GenerateCallback(pl.Callback):
             }
         )
 
-    def count_uniques(self, trainer, pl_module):
-        training_dataset_n_uniques, training_dataset_total_n = count_uniques(
-            model=pl_module, dataloaders=[trainer.datamodule.train_dataloader]
-        )
-
-        trainer.logger.experiment.log(
-            {
-                "training_dataset_n_uniques": training_dataset_n_uniques,
-                "training_dataset_total_n": training_dataset_total_n,
-            }
-        )
-
     def on_train_epoch_end(self, trainer, pl_module):
         if (trainer.current_epoch + 1) % self.every_n_epochs == 0:
             self.reconstruct_images(trainer, pl_module, train=True)
@@ -43,10 +30,6 @@ class GenerateCallback(pl.Callback):
     def on_validation_epoch_end(self, trainer, pl_module):
         if (trainer.current_epoch + 1) % self.every_n_epochs == 0:
             self.reconstruct_images(trainer, pl_module, train=False)
-
-    def on_train_end(self, trainer, pl_module) -> None:
-        if self.count_uniques_bool:
-            self.count_uniques(trainer, pl_module)
 
     def on_train_batch_start(
         self, trainer, pl_module, batch, batch_idx

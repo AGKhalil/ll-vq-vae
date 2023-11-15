@@ -1,7 +1,7 @@
 name: CELEB-A
 
 dataset:
-  data_dir: data/celeba
+  data_dir: data
   num_workers: 5
 
 model:

@@ -1,12 +1,12 @@
 defaults:
-- quantizer: sparse_lattice_init_b
+- quantizer: vq-ema
 - dataset: celeba
 - _self_
 
 general:
   entity: entity
   project: ll-vq-vae
-  seed: 392
+  seed: 2
   device: 0
 
 optimizer:
