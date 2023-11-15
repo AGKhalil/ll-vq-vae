@@ -44,7 +44,7 @@ For all results below the desired codebook size is 512. The learnable lattice us
 Please feel free to open an issue or submit a pull request if you have any questions or suggestions :D. I'm sorry for any bugs you may face and will try to fix them as soon as possible.
 
 # License
-This project is licensed under the MIT License. See the ![LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 # Citation
 If you find this work useful to your research please consider citing our paper:
