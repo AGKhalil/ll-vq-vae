@@ -1,7 +1,7 @@
-for dataset in 'fashion-mnist' 'celeba' 'ffhq1024'
+for dataset in  'ffhq1024' 'fashion-mnist' 'celeba'
 do
     for quantizer in 'dense_lattice' 'sparse_lattice' 'vq' 'vq-ema'
     do
-        python evaluate_checkpoint.py dataset=$dataset quantizer=$quantizer
+        python train.py dataset=$dataset quantizer=$quantizer
     done
 done
