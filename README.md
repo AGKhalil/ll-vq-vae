@@ -1,5 +1,5 @@
 # LL-VQ-VAE
-This repo is the official implementation of ![LL-VQ-VAE: Learnable Lattice Vector-Quantization For Efficient Representations](https://arxiv.org/abs/2310.09382).
+This repo is the official implementation of [LL-VQ-VAE: Learnable Lattice Vector-Quantization For Efficient Representations](https://arxiv.org/abs/2310.09382).
 
 # Installation
 To install the required packages run:
