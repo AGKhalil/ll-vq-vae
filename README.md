@@ -24,9 +24,11 @@ To evaluate a pretrained model you have to specify the dataset and quantizer typ
 python evaluate_checkpoint.py dataset='ffhq1024' quantizer='dense_lattice'
 ```
 
-We include pretrained checkpoints for all datasets and quantizer types in the `pretrained` directory. We also showcase the results below. We calculate the "Effective codebook size" by quantizing the entire dataset and counting the number of unique quantized vectors. This method was used since the lattice codebook isn't stored explicitly and to demonstrate the codebook collapse issue faced with vanilla vector quantization.
+We include pretrained checkpoints for all datasets and quantizer types in the `pretrained` directory. We also showcase the results below. 
 
-You'll notice that we do not compute the codebook size for the dense lattice quantizer. This is because the quantizer assigns each vector to a unique codebook entry, so the codebook size is equal to the number of vectors in the dataset. This is also why the dense lattice reconstructions are superior to the other quantizers as it effictively has an "infinite" codebook size (doesn't really quantize).
+The "Effective codebook size" is calculated by quantizing the entire dataset and counting the number of unique quantized vectors. This method was used since: (1) the lattice codebook isn't stored explicitly and (2) to demonstrate the codebook collapse issue faced with vanilla vector quantization.
+
+You'll notice that we do not compute the codebook size for the dense lattice quantizer as the quantizer assigns each vector to a unique codebook entry, so the codebook size is equal to the number of vectors in the dataset. This is why the dense lattice reconstructions are superior to the other quantizers as it effictively has an "infinite" codebook size (doesn't really quantize).
 
 For all results below the desired codebook size is 512. The learnable lattice uses that number to initialize its structure; however, the codebook size is not fixed and can grow or shrink during training.
 
