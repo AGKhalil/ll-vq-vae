@@ -21,12 +21,12 @@ For all results below the desired codebook size is 512. The learnable lattice us
 
 | Dataset      | Quantizer       | Reconstruction                                                                    | Effective codebook size | Number of quantized vectors |
 |--------------|-----------------|-----------------------------------------------------------------------------------|-------------------------|-----------------------------|
-| FFHQ-1024    | VQ-VAE          | ![ffhq1024_vq](reconstructions/ffhq1024/vq.png)                                   | 28                      | 4,587,520,000               |
-| FFHQ-1024    | LL-VQ-VAE       | ![ffhq1024_lattice](reconstructions/ffhq1024/sparse_lattice_init_b.png)           | 231                     | 4,587,520,000               |
-| FFHQ-1024    | Dense LL-VQ-VAE | ![ffhq1024_dense](reconstructions/ffhq1024/dense_lattice.png)                     | 4,587,520,000           | 4,587,520,000               |
-| Celeb-A      | VQ-VAE          | ![celeba_vq](reconstructions/celeba/vq.png)                                       | 19                      | 1,000,120,212               |
-| Celeb-A      | LL-VQ-VAE       | ![celeba_lattice](reconstructions/celeba/sparse_lattice_init_b.png)               | 858                     | 1,000,120,212               |
-| Celeb-A      | Dense LL-VQ-VAE | ![celeba_dense](reconstructions/celeba/dense_lattice.png)                         | 1,000,120,212           | 1,000,120,212               |
-| FashionMNIST | VQ-VAE          | ![fashion-mnist_vq](reconstructions/fashion-mnist/vq.png)                         | 17                      | 11,760,000                  |
-| FashionMNIST | LL-VQ-VAE       | ![fashion-mnist_lattice](reconstructions/fashion-mnist/sparse_lattice_init_b.png) | 457                     | 11,760,000                  |
-| FashionMNIST | Dense LL-VQ-VAE | ![fashion-mnist_dense](reconstructions/fashion-mnist/dense_lattice.png)           | 11,760,000              | 11,760,000                  |
+| FFHQ-1024    | VQ-VAE          | ![ffhq1024_vq](experiments/reconstructions/ffhq1024/vq.png)                                   | 28                      | 4,587,520,000               |
+| FFHQ-1024    | LL-VQ-VAE       | ![ffhq1024_lattice](experiments/reconstructions/ffhq1024/sparse_lattice_init_b.png)           | 231                     | 4,587,520,000               |
+| FFHQ-1024    | Dense LL-VQ-VAE | ![ffhq1024_dense](experiments/reconstructions/ffhq1024/dense_lattice.png)                     | 4,587,520,000           | 4,587,520,000               |
+| Celeb-A      | VQ-VAE          | ![celeba_vq](experiments/reconstructions/celeba/vq.png)                                       | 19                      | 1,000,120,212               |
+| Celeb-A      | LL-VQ-VAE       | ![celeba_lattice](experiments/reconstructions/celeba/sparse_lattice_init_b.png)               | 858                     | 1,000,120,212               |
+| Celeb-A      | Dense LL-VQ-VAE | ![celeba_dense](experiments/reconstructions/celeba/dense_lattice.png)                         | 1,000,120,212           | 1,000,120,212               |
+| FashionMNIST | VQ-VAE          | ![fashion-mnist_vq](experiments/reconstructions/fashion-mnist/vq.png)                         | 17                      | 11,760,000                  |
+| FashionMNIST | LL-VQ-VAE       | ![fashion-mnist_lattice](experiments/reconstructions/fashion-mnist/sparse_lattice_init_b.png) | 457                     | 11,760,000                  |
+| FashionMNIST | Dense LL-VQ-VAE | ![fashion-mnist_dense](experiments/reconstructions/fashion-mnist/dense_lattice.png)           | 11,760,000              | 11,760,000                  |
