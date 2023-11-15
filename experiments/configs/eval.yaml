@@ -1,6 +1,6 @@
 defaults:
 - quantizer: sparse_lattice
-- dataset: celeba
+- dataset: ffhq1024
 - _self_
 
 optimizer:
