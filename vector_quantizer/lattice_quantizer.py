@@ -26,7 +26,10 @@ class LatticeQuantizer(Quantizer):
 
         self.embedding = nn.Embedding(1, self.embedding_dim)
         if initialize_embedding_b:
-            self.embedding.weight.data.uniform_(-self.B, self.B)
+            self.embedding.weight.data.uniform_(
+                -self.B,
+                self.B,
+            )
         else:
             self.embedding.weight.data.uniform_(-1, 1)
 
@@ -35,6 +38,15 @@ class LatticeQuantizer(Quantizer):
             0, 2, 3, 1
         ).contiguous()  # [B x D x H x W] -> [B x H x W x D]
         flat_latents = latents.view(-1, self.embedding_dim)  # [BHW x D]
+
+        # clamp lattice
+        self.embedding.weight = nn.Parameter(
+            self.embedding.weight.sign()
+            * torch.clamp(
+                torch.abs(self.embedding.weight),
+                min=self.B / 8,
+            )
+        )
 
         # Babai estimate
         babai_estimate = torch.round(
@@ -50,13 +62,8 @@ class LatticeQuantizer(Quantizer):
         # Compute the LQ Losses
         commitment_loss = F.mse_loss(quantized_latents.detach(), latents)
         embedding_loss = F.mse_loss(quantized_latents, latents.detach())
-        size_loss = -torch.sum(torch.abs(self.embedding.weight))
 
-        lq_loss = (
-            embedding_loss
-            + self.commitment_cost * commitment_loss
-            + self.sparsity_cost * size_loss
-        )
+        lq_loss = embedding_loss + self.commitment_cost * commitment_loss
 
         # Add the residue back to the latents
         quantized_latents = latents + (quantized_latents - latents).detach()
